@@ -40,8 +40,10 @@ INSTALLED_APPS = [
     
     'rest_framework',
     'rest_framework_simplejwt',
+    'channels',
     
     'accounts',
+    'chats',
 ]
 
 MIDDLEWARE = [
@@ -72,7 +74,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+#WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.routing.application'
 
 
 # Database
@@ -156,3 +159,11 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'Ninjafits app <ninjafits.verify@gmail.com>'
 
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('localhost', 6379)],
+        },
+    },
+}
