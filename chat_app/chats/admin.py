@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Message, Notifications
+# Register your models here.
 
 
 @admin.register(Message)
@@ -8,4 +9,4 @@ class MessageAdmin(admin.ModelAdmin):
 
 @admin.register(Notifications)
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('sender', 'receiver',"action_type")
+    list_display = ('sender', 'receiver',"type")
