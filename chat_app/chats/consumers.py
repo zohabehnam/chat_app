@@ -11,14 +11,10 @@ from config import settings
 
 class ChatConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
-	
-
 		try:
 			self.user_token = self.scope['url_route']['kwargs']['token']
 			decoded_data = jwt_decode(self.user_token, settings.SECRET_KEY, algorithms=["HS256"])
 			self.user=str(decoded_data['user_id'])
-	
-
 			await self.channel_layer.group_add(
 		    	self.user,
 		    	self.channel_name
@@ -33,27 +29,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
 			self.user,
 			self.channel_name
 		)
-
-		
-
-	# async def receive(self, text_data=None, bytes_data=None):
-	#     if text_data:
-	#         text_data_json = json.loads(text_data)
-	#         receiver = text_data_json['receiver']
-	#         user_group_name = f"{username}"
-			
-	#         await self.channel_layer.group_send(
-	#             user_group_name,
-	#             {
-	#                 'type': 'chat_message',
-	#                 'message': text_data
-	#             }
-	#         )
+  
+	async def receive(self, text_data=None, bytes_data=None, **kwargs):
+		if text_data:
+				text_data_json = json.loads(text_data)
+				receiver = text_data_json['receiver']
+				user_group_name = f"{receiver}"
+				await self.channel_layer.group_send(
+					user_group_name,
+					{
+						'type':"chat_message",
+						'message':text_data
+					}
+				)
+		return await super().receive(text_data, bytes_data, **kwargs)
+	async def notify(self, event):
+		pass
 
 	async def chat_message(self, event):
 	    message = event['message']
-
 	    await self.send(text_data=message)
+     
+    
 
 class NotificationConsumer(AsyncJsonWebsocketConsumer):
 
@@ -75,6 +72,24 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
 			self.user,
 			self.channel_name
 		)
+  
+	async def receive(self, text_data=None, bytes_data=None, **kwargs):
+		if text_data:
+				text_data_json = json.loads(text_data)
+				receiver = text_data_json['receiver']
+				user_group_name = f"{receiver}"
+				await self.channel_layer.group_send(
+					user_group_name,
+					{
+						'type':"notify",
+						'message':text_data
+					}
+				)
+		return await super().receive(text_data, bytes_data, **kwargs)
 
 	async def notify(self, event):
-	    await self.send_json(event)
+		await self.send_json(event)
+  
+	async def chat_message(self, event):
+		pass
+

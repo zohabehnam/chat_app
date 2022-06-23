@@ -5,6 +5,8 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 import json
 from rest_framework import status
+
+from chats.utils import notify
 from .models import Message, Notifications
 from accounts.models import User
 from django.db.models import Q
@@ -44,6 +46,7 @@ class NewMessage(APIView):
 
 
             )
+            notify(self, request.user.id, receiver, "texted")
 
 
         except:
