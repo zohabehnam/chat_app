@@ -62,7 +62,7 @@ class MyChatsView(APIView):
         people=[]
         user = request.user.id
 
-        message=Message.objects.filter(Q(receiver=user) | Q(sender=user)   ).values_list('sender', 'receiver').order_by('-created')
+        message=Message.objects.filter(Q(receiver=user) | Q(sender=user)).values_list('sender', 'receiver').order_by('-created')
         for friend in message:
             people.extend(friend)
         people=set(people)

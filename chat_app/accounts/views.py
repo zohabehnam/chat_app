@@ -45,12 +45,15 @@ class RegistrationView(APIView):
         code = ''.join(random.choice(string.digits) for i in range(5))
         is_set = redis_conn.set(code, request.data["email"], 300, nx=True)
         if is_set:
-            subject = 'verification code for chat app'
-            message = code
-            email_from = settings.EMAIL_HOST_USER
-            recipient_list = [request.data['email'],]
-            send_mail( subject, message, email_from, recipient_list, fail_silently=False)
-        return Response(data.data, status=status.HTTP_200_OK)
+            #subject = 'verification code for chat app'
+            #message = code
+            #email_from = settings.EMAIL_HOST_USER
+            #recipient_list = [request.data['email'],]
+            #send_mail( subject, message, email_from, recipient_list, fail_silently=False)
+            print(code)
+            return Response(data.data, status=status.HTTP_200_OK)
+        return Response(data = {"security conflict"}, status=status.HTTP_400_BAD_REQUEST)
+        
     
 
 class VerifyEmailView(APIView): 
@@ -73,6 +76,7 @@ class VerifyEmailView(APIView):
                         'access': str(refresh.access_token),
                         'message': "email verified successfully",
                     }
+                    redis_conn.delete(code)
                     return Response(data=data, status=status.HTTP_200_OK)
                 return Response(data={"invalid code"}, status=status.HTTP_400_BAD_REQUEST)
             return Response(data={"invalid code"}, status=status.HTTP_400_BAD_REQUEST)
